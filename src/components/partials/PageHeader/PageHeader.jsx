@@ -2,10 +2,12 @@ import styles from './PageHeader.module.css';
 import notificationsIcon from '../../../assets/icons/notifications.svg';
 import profileIcon from '../../../assets/icons/profile.svg';
 import { Link } from 'react-router-dom';
+import PageTitle from '../PageTitle/PageTitle';
 
 function PageHeader({text}) {
     return (
         <div className='flex justify-between flex-wrap gap-4'>
+            <PageTitle title={text}/>
             <span className='text-xl text-grey-90 font-medium'>{text}</span>
             <div className='flex gap-2 items-center'>
                 <span className='text-secondary-blue font-semibold'>Upgrade To Merchant</span>

@@ -9,11 +9,25 @@ import AirtelLogo from '../../assets/logos/airtel.svg';
 import EtisalatLogo from '../../assets/logos/etisalat.svg';
 import cancelIcon from '../../assets/icons/cancel.svg';
 import hamburgerIcon from '../../assets/icons/hamburger.svg';
+import FlashMessage from '../partials/FlashMessage/FlashMessage';
 
 
 function Layout() {
+    const [showFlashMessage, setShowFlashMessage] = useState(false);
+
+    useEffect(() => {
+        // if (!sessionStorage.getItem('show_welcome')) {
+            sessionStorage.setItem('show_welcome', 'true')
+            setShowFlashMessage(true);
+        // }
+    }, []);
+
     return (
         <div className='w-full h-full flex'>
+            {
+                showFlashMessage &&
+                <FlashMessage message={null} hide={() => setShowFlashMessage(false)} />
+            }
             <Sidebar />
             <div className='grow h-full overflow-x-hidden overflow-y-auto'>
                 <Outlet />

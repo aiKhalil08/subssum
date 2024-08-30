@@ -4,10 +4,12 @@ import chevronLeftIcon from '../../../../assets/icons/chevron-left.svg';
 import googleLogo from '../../../../assets/logos/google.svg';
 import SlideToggle, { Button, InputField, PasswordField } from '../../../partials/CustomElements/CustomElements';
 import sideImage from '../../../../assets/images/login-left-section.svg';
+import PageTitle from '../../../partials/PageTitle/PageTitle';
 
 function Login() {
     return (
         <div className='h-full flex'>
+            <PageTitle title={'Login'}/>
             <div className="hidden  lg:block h-full w-fit ">
                 <img src={sideImage} className='h-full w-full' alt="" />
             </div>
