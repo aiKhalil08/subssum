@@ -17,13 +17,11 @@ function Layout() {
     const [showFlashMessage, setShowFlashMessage] = useState(false);
 
     useEffect(() => {
-        if (!sessionStorage.getItem('show_welcome')) {
+        if (auth.isLoggedIn() && !sessionStorage.getItem('show_welcome')) {
             sessionStorage.setItem('show_welcome', 'true')
             setShowFlashMessage(true);
         }
     }, []);
-
-
 
     return (
         <AuthContext.Provider value={auth}>
