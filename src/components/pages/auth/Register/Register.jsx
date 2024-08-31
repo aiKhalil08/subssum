@@ -41,6 +41,7 @@ function Register() {
             if (!formData[field].trim()) valErrors[field] = 'This field is required';
         })
         if (!valErrors.email && !emailRegex.test(formData.email)) valErrors.email = 'Invalid email address';
+        if (!valErrors.phoneNumber && !/^0[7-9][0-1]\d{8}$/.test(formData.phoneNumber)) valErrors.phoneNumber = 'Invalid phone number';
         if (!valErrors.password && !passwordRegex.test(formData.password)) valErrors.password = 'Must be at least 8 characters long and must contain at least a lower case letter, an upper case letter a digit and a special character';
         if (!valErrors.passwordConfirmation && !passwordRegex.test(formData.passwordConfirmation)) valErrors.passwordConfirmation = 'Must be at least 8 characters long and must contain at least a lower case letter, an upper case letter a digit and a special character';
         if ((!valErrors.password && !valErrors.passwordConfirmation) && formData.password !== formData.passwordConfirmation) valErrors.passwordConfirmation = 'Input a matching password'
