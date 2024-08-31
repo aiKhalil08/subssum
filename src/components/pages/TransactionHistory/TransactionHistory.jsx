@@ -110,7 +110,7 @@ function TransactionHistory() {
         (async () => {
             try {
                 setNetworkError(null);
-                let response = await fetch('https://subssumapi-production.up.railway.app/transactions', {method: 'GET', headers: [['Authorization', `Bearer ${localStorage.getItem('access')}`]]});
+                let response = await fetch('https://subssumapi-production.up.railway.app/api/transactions', {method: 'GET', headers: [['Authorization', `Bearer ${localStorage.getItem('access')}`]]});
                 if (!response.ok) {
                     let error = await response.json();
                     throw new Error(error.message);

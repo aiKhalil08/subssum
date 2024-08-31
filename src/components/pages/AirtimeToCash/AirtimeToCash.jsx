@@ -64,7 +64,7 @@ function AirtimeToCash() {
         try {
             setIsSubmitting(true);
             setNetworkError(null);
-            let response = await fetch('https://subssumapi-production.up.railway.app/airtime-to-cash', {method: 'POST', body: JSON.stringify(formData), headers: [['Content-Type', 'application/json'], ['Authorization', `Bearer ${localStorage.getItem('access')}`]]});
+            let response = await fetch('https://subssumapi-production.up.railway.app/api/airtime-to-cash', {method: 'POST', body: JSON.stringify(formData), headers: [['Content-Type', 'application/json'], ['Authorization', `Bearer ${localStorage.getItem('access')}`]]});
             let data = await response.json();
             if (!response.ok) {
                 throw new Error(data.message);
