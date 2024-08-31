@@ -8,7 +8,7 @@ import airtelLogo from '../../../assets/logos/airtel.svg';
 import etisalatLogo from '../../../assets/logos/etisalat.svg';
 import chevronDown from '../../../assets/icons/chevron-down.svg';
 import checkMark from '../../../assets/icons/check.svg';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 
 function AirtimeToCash() {
@@ -22,6 +22,7 @@ function AirtimeToCash() {
         amount: '',
         pin: '',
     });
+    const navigate = useNavigate();
 
     useEffect(() => {
         setFormData({...formData, network: preselectedNetwork});
@@ -70,6 +71,9 @@ function AirtimeToCash() {
                 throw new Error(data.message);
             };
             setTransactionSuccessful(data.message);
+            setTimeout(() => {
+                navigate('/transaction-history');
+            }, 2000);
         } catch (e) {
             setNetworkError(e.message)
         } finally {
