@@ -136,7 +136,7 @@ function ChangePinAndPassword() {
         try {
             setIsSubmitting(true);
             setNetworkError(null);
-            let url = section === 'password' ? 'https://subssumapi.onrender.com/api/change-password' : 'https://subssumapi.onrender.com/api/change-pin';
+            let url = section === 'password' ? 'https://subssumapi-production.up.railway.app/change-password' : 'https://subssumapi-production.up.railway.app/change-pin';
             let response = await fetch(url, {method: 'POST', body: JSON.stringify(section === 'password' ? passwordFormData : pinFormData), headers: [['Content-Type', 'application/json'], ['Authorization', `Bearer ${localStorage.getItem('access')}`]]});
             if (!response.ok) {
                 let error = await response.json();

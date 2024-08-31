@@ -54,7 +54,7 @@ function Register() {
         try {
             setIsSubmitting(true);
             setNetworkError(null);
-            let response = await fetch('https://subssumapi.onrender.com/api/register', {method: 'POST', body: JSON.stringify(formData), headers: [['Content-Type', 'application/json']]});
+            let response = await fetch('https://subssumapi-production.up.railway.app/register', {method: 'POST', body: JSON.stringify(formData), headers: [['Content-Type', 'application/json']]});
             if (!response.ok) {
                 let error = await response.json();
                 throw new Error(error.message);
