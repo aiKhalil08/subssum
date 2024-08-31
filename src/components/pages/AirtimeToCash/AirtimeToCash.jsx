@@ -73,7 +73,7 @@ function AirtimeToCash() {
             setTransactionSuccessful(data.message);
             setTimeout(() => {
                 navigate('/transaction-history');
-            }, 2000);
+            }, 1000);
         } catch (e) {
             setNetworkError(e.message)
         } finally {
