@@ -5,11 +5,15 @@ import shareIcon from '../../../assets/icons/share.svg';
 import cashoutIcon from '../../../assets/icons/cashout.svg';
 import { Button } from '../../partials/CustomElements/CustomElements';
 import PageHeader from '../../partials/PageHeader/PageHeader';
+import { useContext } from 'react';
+import AuthContext from '../../../contexts/auth-context';
 
 function Dashboard() {
+    const auth = useContext(AuthContext);
+    const user = auth.getUser();
     return (
         <div className='p-8 flex flex-col gap-8'>
-            <PageHeader text={'Welcome, Ibrahim Abdullahi-Idiagbon'} />
+            <PageHeader text={`Welcome, ${user.firstName} ${user.lastName}`} />
             <div className='flex flex-col lg:flex-row gap-6'>
                 <div className='flex flex-col gap-5 flex-[0_0_463px] max-w-[463px]'>
                     <BalanceWidget walletBalance={4000} />

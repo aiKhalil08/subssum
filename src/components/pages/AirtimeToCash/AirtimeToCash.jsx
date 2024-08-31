@@ -16,18 +16,66 @@ function AirtimeToCash() {
     const [currentStep, setCurrentStep] = useState(1);
     const [searchParams, _] = useSearchParams();
     const preselectedNetwork = searchParams.get('n');
-
     const [formData, setFormData] = useState({
         network: '',
-        phone_number: '',
+        phoneNumber: '',
         amount: '',
-        pin: ''
+        pin: '',
     });
-    
+
     useEffect(() => {
         setFormData({...formData, network: preselectedNetwork});
     }, [preselectedNetwork]);
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [networkError, setNetworkError] = useState(null);
+    const [transactionSuccessful, setTransactionSuccessful] = useState(null);
+    const [validationErrors, setValidationErrors] = useState({});
+
+    function handleChange(e) {
+        const {name, value} = e.target;
+        setValidationErrors({...validationErrors, [name]: null})
+
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+    }
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+
+
+        // validate form
+        let valErrors = {};
+        Object.keys(formData).forEach(field => {
+            if (!formData[field]?.trim()) valErrors[field] = 'This field is required';
+        })
+        if (!valErrors.phoneNumber && !/^0[7-9][0-1]\d{8}$/.test(formData.phoneNumber)) valErrors.phoneNumber = 'Invalid phone number';
+        if (!valErrors.amount && !/^\d{1,}$/.test(formData.amount)) valErrors.amount = 'Invalid amount';
+        if (!valErrors.pin && !/^[0-9]*$/.test(formData.pin)) valErrors.pin = 'Invalid pin';
+
+        if (Object.keys(valErrors).length > 0) {
+            setValidationErrors(valErrors);
+            return;
+        }
+
+        // submit form
+        try {
+            setIsSubmitting(true);
+            setNetworkError(null);
+            let response = await fetch('https://subssumapi.onrender.com/api/airtime-to-cash', {method: 'POST', body: JSON.stringify(formData), headers: [['Content-Type', 'application/json'], ['Authorization', `Bearer ${localStorage.getItem('access')}`]]});
+            let data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message);
+            };
+            setTransactionSuccessful(data.message);
+        } catch (e) {
+            setNetworkError(e.message)
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
 
     return (
         <div className='p-8 flex flex-col gap-8'>
@@ -39,7 +87,7 @@ function AirtimeToCash() {
                     <StepIndicator step={3} setCurrentStep={setCurrentStep} text={'View Receipt'} isActive={currentStep >= 3} />
                 </div>
                 <div>
-                    {currentStep === 1 && <FillInfoForm {...{setFormData, formData, setCurrentStep}} />}
+                    {currentStep === 1 && <FillInfoForm {...{formData, isSubmitting, handleChange, networkError, transactionSuccessful, validationErrors, handleSubmit, setCurrentStep}} />}
                     {currentStep === 2 && <MakePaymentForm {...{setCurrentStep}} />}
                     {currentStep === 3 && <ViewReceiptForm />}
                 </div>
@@ -57,31 +105,24 @@ function StepIndicator({step, setCurrentStep, text, isActive = false}) {
     );
 }
 
-function FillInfoForm({formData, setFormData, setCurrentStep}) {
-
-    function handleChange(e) {
-        const {name, value} = e.target;
-
-        setFormData({
-            ...formData,
-            [name]: value
-        });
-    }
+function FillInfoForm({formData, handleChange, handleSubmit, validationErrors, isSubmitting, transactionSuccessful, networkError}) {
 
     return (
-        <form action="" className='bg-grey-10 border border-grey-30 flex flex-col gap-14 p-6'>
+        <form method='POST' onSubmit={handleSubmit} className='bg-grey-10 border border-grey-30 flex flex-col gap-14 p-6'>
             <section className='flex flex-col gap-8'>
                 <h3 className='text-center font-semibold text-grey-60 text-xl'>Airtime to Cash</h3>
                 <div className='flex flex-col gap-3'>
+                    {networkError && <div className='text-accent-error'>{networkError}</div>}
+                    {transactionSuccessful && <div className='text-accent-success'>{transactionSuccessful}</div>}
                     <div className='flex flex-col sm:flex-row md:flex-col lg:flex-row gap-3'>
-                        <NetworkSelector selected={formData.network} onSelect={handleChange} />
-                        <InputField {...{name: 'phone_number', label: 'Phone Number', placeholder: 'Enter phone number'}} />
+                        <NetworkSelector selected={formData.network} onSelect={handleChange} error={validationErrors.network} />
+                        <InputField {...{name: 'phoneNumber', label: 'Phone Number', placeholder: 'Enter phone number', value: formData.phoneNumber, onChange: handleChange, error: validationErrors.phoneNumber}} />
                     </div>
-                    <InputField {...{name: 'amount', label: 'Amount', placeholder: 'Enter amount'}} />
-                    <InputField {...{name: 'pin', label: 'Airtime Share Pin', placeholder: 'Enter pin'}} />
+                    <InputField {...{name: 'amount', label: 'Amount', placeholder: 'Enter amount', value: formData.amount, onChange: handleChange, error: validationErrors.amount}} />
+                    <InputField {...{name: 'pin', label: 'Airtime Share Pin', placeholder: 'First time? Use 0000 or create new pin', value: formData.pin, onChange: handleChange, error: validationErrors.pin}} />
                 </div>
             </section>
-            <Button {...{isFormButton: true, text: 'Proceed', onClick: () => setCurrentStep(2)}} />
+            <Button {...{isFormButton: true, text: isSubmitting ? 'Please wait...' : 'Submit', disabled: isSubmitting}} />
         </form>
     );
 }
@@ -112,16 +153,17 @@ function ViewReceiptForm() {
     );
 }
 
-function InputField({label, name, placeholder, value, onChange}) {
+function InputField({label, name, placeholder, error = null, value, onChange}) {
     return (
         <div className='flex flex-col gap-1 flex-1'>
             <label htmlFor={name} className='text-grey-60 text-sm'>{label}</label>
-            <input type="text" id={name} name={name} placeholder={placeholder} className='rounded-lg border border-[#C7DBEF] p-2 text-grey-60 text-sm placeholder:text-grey-60 font-semibold outline-none' />
+            <input type="text" id={name} name={name} value={value} onChange={onChange} placeholder={placeholder} className='rounded-lg border border-[#C7DBEF] p-2 text-grey-60 text-sm placeholder:text-grey-60 font-semibold outline-none' />
+            {error && <div className='text-sm text-accent-error'>{error}</div>}
         </div>
     )
 }
 
-function NetworkSelector({selected, onSelect}) {
+function NetworkSelector({selected, onSelect, error}) {
 
     const [isCollapsed, setIsCollapsed] = useState(true);
 
@@ -177,6 +219,7 @@ function NetworkSelector({selected, onSelect}) {
                     </div>
                 </div>
             </div>
+            {error && <div className='text-sm text-accent-error'>{error}</div>}
         </div>
     )
 }

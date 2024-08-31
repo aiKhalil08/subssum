@@ -2,7 +2,7 @@ import { NavLink, Link, Outlet, useLocation } from 'react-router-dom';
 import styles from './Layout.module.css';
 import subsumLogo from '../../assets/logos/subssum.svg';
 import logoutIcon from '../../assets/icons/logout.svg';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import MTNLogo from '../../assets/logos/mtn.svg';
 import GLOLogo from '../../assets/logos/glo.svg';
 import AirtelLogo from '../../assets/logos/airtel.svg';
@@ -10,29 +10,37 @@ import EtisalatLogo from '../../assets/logos/etisalat.svg';
 import cancelIcon from '../../assets/icons/cancel.svg';
 import hamburgerIcon from '../../assets/icons/hamburger.svg';
 import FlashMessage from '../partials/FlashMessage/FlashMessage';
-
+import AuthContext from '../../contexts/auth-context';
+import auth from '../../utils/auth';
 
 function Layout() {
     const [showFlashMessage, setShowFlashMessage] = useState(false);
 
     useEffect(() => {
-        // if (!sessionStorage.getItem('show_welcome')) {
+        if (!sessionStorage.getItem('show_welcome')) {
             sessionStorage.setItem('show_welcome', 'true')
             setShowFlashMessage(true);
-        // }
+        }
     }, []);
 
+
+
     return (
-        <div className='w-full h-full flex'>
+        <AuthContext.Provider value={auth}>
             {
-                showFlashMessage &&
-                <FlashMessage message={null} hide={() => setShowFlashMessage(false)} />
+                auth.isLoggedIn() &&
+                <div className='w-full h-full flex'>
+                    {
+                        showFlashMessage &&
+                        <FlashMessage message={null} hide={() => setShowFlashMessage(false)} />
+                    }
+                    <Sidebar auth={auth} />
+                    <div className='grow h-full overflow-x-hidden overflow-y-auto'>
+                        <Outlet />
+                    </div>
+                </div>
             }
-            <Sidebar />
-            <div className='grow h-full overflow-x-hidden overflow-y-auto'>
-                <Outlet />
-            </div>
-        </div>
+        </AuthContext.Provider>
     );
 }
 
@@ -48,7 +56,7 @@ const SIDEBAR_MENU = [
 ];
 
 
-function Sidebar() {
+function Sidebar({auth}) {
     const [isExpanded, setIsExpanded] = useState(false);
     const {pathname, search} = useLocation();
 
@@ -75,10 +83,10 @@ function Sidebar() {
                         }
                     </ul>
                     <div className='mt-auto flex justify-between'>
-                        <Link to={'/login'} className='flex gap-4'>
+                        <button type='button' onClick={() => auth.logout()} className='flex gap-4'>
                             <img src={logoutIcon} alt="" />
                             <span className='font-medium text-grey-70'>Log out</span>
-                        </Link>
+                        </button>
                         <span>
                             <ChevronIcon />
                         </span>
@@ -123,16 +131,16 @@ function MenuItem({item}) {
             </button>
             <div className={`${isCollapsed ? 'max-h-0' : 'max-h-80'} overflow-hidden`}>
                 <div className='flex justify-between mt-4'>
-                    <NavLink to={`${item.link}?n=${'mtn'}`}>
+                    <NavLink to={`${item.link}?n=${'MTN'}`}>
                         <img src={MTNLogo} alt="" />
                     </NavLink>
-                    <NavLink to={`${item.link}?n=${'glo'}`}>
+                    <NavLink to={`${item.link}?n=${'GLO'}`}>
                         <img src={GLOLogo} alt="" />
                     </NavLink>
-                    <NavLink to={`${item.link}?n=${'airtel'}`}>
+                    <NavLink to={`${item.link}?n=${'Airtel'}`}>
                         <img src={AirtelLogo} alt="" />
                     </NavLink>
-                    <NavLink to={`${item.link}?n=${'etisalat'}`}>
+                    <NavLink to={`${item.link}?n=${'Etisalat'}`}>
                         <img src={EtisalatLogo} alt="" />
                     </NavLink>
                 </div>

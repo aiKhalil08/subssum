@@ -4,26 +4,28 @@ import closedEyeIcon from '../../../assets/icons/closed-eye.svg';
 import openEyeIcon from '../../../assets/icons/open-eye.svg';
 import { useState } from 'react';
 
-export function InputField({label, name, placeholder, value, onChange}) {
+export function InputField({label, name, placeholder, value, onChange, error = null}) {
     return (
         <div className='flex flex-col gap-1'>
             <label htmlFor={name} className='text-grey-70'>{label}</label>
-            <input type="text" id={name} name={name} placeholder={placeholder} className='rounded-[4px] border border-grey-30 placeholder:text-[#869DCB] p-2 text-grey-90 outline-none' />
+            <input type="text" id={name} name={name} placeholder={placeholder} value={value} onChange={onChange} className='rounded-[4px] border border-grey-30 placeholder:text-[#869DCB] p-2 text-grey-90 outline-none' />
+            {error && <div className='text-sm text-accent-error'>{error}</div>}
         </div>
     )
 }
 
-export function PasswordField({label, name, placeholder, value, onChange}) {
+export function PasswordField({label, name, placeholder, value, onChange, error = null}) {
     const [showPassword, setShowPassword] = useState(false);
     return (
         <div className='flex flex-col gap-1'>
             <label htmlFor={name} className='text-grey-70'>{label}</label>
             <div className='relative'>
-                <input type={showPassword ? "text" : "password"} id={name} name={name} placeholder={placeholder} className='rounded-[4px] border border-grey-30 placeholder:text-[#869DCB] p-2 pr-9 text-grey-90 outline-none w-full h-full' />
+                <input type={showPassword ? "text" : "password"} id={name} name={name} placeholder={placeholder} value={value} onChange={onChange} className='rounded-[4px] border border-grey-30 placeholder:text-[#869DCB] p-2 pr-9 text-grey-90 outline-none w-full h-full' />
                 <span onClick={() => setShowPassword(!showPassword)} className='absolute top-2 right-2 cursor-pointer'>
                     <img src={showPassword ? closedEyeIcon : openEyeIcon} alt="" />
                 </span>
             </div>
+            {error && <div className='text-sm text-accent-error'>{error}</div>}
         </div>
     )
 }
@@ -45,9 +47,9 @@ export function SlideToggle ({ initialState = false, onToggle }) {
   );
 };
 
-export function Button({text, onClick, isFormButton = false, classes=''}) {
+export function Button({text, onClick, disabled = false, isFormButton = false, classes=''}) {
     return (
-        <button type="button" onClick={(e) => onClick && onClick(e)} className={`bg-secondary-blue py-4 px-8 sm:px-12 rounded-lg text-grey-10 leading-none font-semibold whitespace-nowrap ${isFormButton && 'w-full'} ${classes}`}>
+        <button disabled={disabled} type={isFormButton ? 'submit' : 'button'} onClick={(e) => onClick && onClick(e)} className={`bg-secondary-blue py-4 px-8 sm:px-12 rounded-lg text-grey-10 leading-none font-semibold whitespace-nowrap ${isFormButton && 'w-full'} ${classes} disabled:opacity-70`}>
             {text}
         </button>
     );
